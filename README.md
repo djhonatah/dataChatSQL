@@ -134,24 +134,26 @@ Foi realizada uma análise crítica das tecnologias sugeridas no projeto, as qua
 - **Python**: Linguagem padrão ouro para dados e IA, altamente recomendada.
 - **LLM**: Como a aplicação precisa entender esquemas SQL complexos (com JOINs), é altamente recomendável utilizar modelos fortes no raciocínio, como o **GPT-4o-mini**, em vez de modelos menores ou open-source locais mais fracos, a fim de garantir SQLs precisos.
 
-## 6. Como Executar o Protótipo e Scripts
+## 6. Como Executar o Protótipo e Scripts (Padrão UV)
 
-1. Instale as dependências:
+Para garantir padronização absoluta das dependências em todas as máquinas da equipe e altíssima velocidade de instalação, este projeto utiliza o **[uv](https://github.com/astral-sh/uv)** da Astral como gerenciador de pacotes e ambientes virtuais, substituindo o antigo `pip` e `requirements.txt`.
+
+1. **Sincronize as dependências** (isso criará o ambiente virtual `.venv` automaticamente e instalará o exato conteúdo do `uv.lock`):
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
-2. Crie o Banco de Dados DuckDB importando os CSVs:
+2. **Crie o Banco de Dados DuckDB** importando os CSVs:
 ```bash
-python src/setup_database.py
+uv run python src/setup_database.py
 ```
 
-3. Teste as consultas:
+3. **Teste as consultas**:
 ```bash
-python src/test_queries.py
+uv run python src/test_queries.py
 ```
 
-4. Suba a aplicação Streamlit:
+4. **Suba a aplicação Streamlit**:
 ```bash
-streamlit run app/app.py
+uv run streamlit run app/app.py
 ```

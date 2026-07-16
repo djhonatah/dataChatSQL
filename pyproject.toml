@@ -1,0 +1,11 @@
+[project]
+name = "data-chat-sql"
+version = "0.1.0"
+description = "Assistente Inteligente para Consulta de Dados Olist em Linguagem Natural"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "duckdb",
+    "pandas",
+    "streamlit",
+]
