@@ -5,7 +5,7 @@ import glob
 def setup():
     # Caminhos
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_dir = os.path.join(base_dir, 'datas', 'dataset_olist')
+    data_dir = os.path.join(base_dir, 'datasCSV', 'dataset_olist')
     db_dir = os.path.join(base_dir, 'data')
     
     # Criar pasta data se não existir
