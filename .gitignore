@@ -1,0 +1,19 @@
+# Ambientes Virtuais
+venv/
+env/
+.env
+
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Banco de Dados
+*.duckdb
+data/*.duckdb
+
+# Streamlit
+.streamlit/
+
+# OS files
+.DS_Store
+Thumbs.db
