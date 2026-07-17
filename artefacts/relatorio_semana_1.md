@@ -125,14 +125,3 @@ flowchart TD
 3. **Database Engine**: DuckDB operando de forma serverless e otimizada para queries analíticas (OLAP).
 4. **LLM Engine**: API de modelo de linguagem responsável por traduzir perguntas para SQL (Text-to-SQL) e explicar os dados de retorno.
 
----
-
-## 4. Análise Crítica das Tecnologias
-
-As tecnologias sugeridas para o projeto foram avaliadas pela equipe e validadas com sucesso:
-
-1. **DuckDB em vez de SQLite/PostgreSQL**: É a escolha ideal. Por se tratar de um projeto que faz consultas agregadoras e analíticas sobre dados parados (OLAP), o DuckDB entrega uma performance infinitamente superior ao SQLite, sem a complexidade de gerir um servidor PostgreSQL, além de ter integração perfeita em Python.
-2. **Gestão de Dependências (uv)**: Para evitar instabilidades no grupo, substituímos o `pip` pelo `uv`. Isso centraliza a configuração em um `pyproject.toml` e usa o arquivo de bloqueio `uv.lock`, garantindo as exatas mesmas versões para toda a equipe em velocidades extremas.
-3. **Streamlit**: Permite construir uma interface completa de dados, com suporte a visualização de DataFrames e gráficos plotados no Python, dispensando codificação em JavaScript/HTML. Excelente aderência ao projeto.
-4. **LangChain / LlamaIndex**: Ferramentas perfeitas para a construção da pipeline de recuperação de SQL e injeção do dicionário de dados (Schema). O LangChain será empregado como orquestrador.
-5. **Modelos (GPT-4o-mini / Llama 3)**: Devido à complexidade de 8 tabelas e múltiplos JOINs, Modelos LLM básicos podem alucinar. Por isso, utilizaremos preferencialmente GPT-4o-mini via API, sendo capaz de absorver bem as instruções e criar queries exatas, ou opções equivalentes com bom raciocínio SQL.
