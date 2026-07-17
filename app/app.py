@@ -67,13 +67,7 @@ if btn_consultar and pergunta:
     tab1, tab2 = st.tabs(["Visualização", "SQL Gerada"])
     
     with tab1:
-        # Tabela simulada
-        mock_data = pd.DataFrame({
-            "Categoria": ["Bed & Bath", "Health & Beauty", "Sports & Leisure", "Computers Accessories", "Furniture Decor"],
-            "Faturamento (R$)": [2148320.50, 1502400.20, 1200300.90, 1150000.00, 950800.75]
-        })
-        st.dataframe(mock_data, use_container_width=True, hide_index=True)
-        
+
         # Explicação simulada
         st.markdown(f"""
         <div class="explanation-box">
@@ -81,6 +75,16 @@ if btn_consultar and pergunta:
             Em resposta à sua pergunta, a categoria com maior faturamento foi <b>Bed & Bath</b>, alcançando mais de R$ 2,1 milhões no período analisado.
         </div>
         """, unsafe_allow_html=True)
+
+        
+        # Tabela simulada
+        mock_data = pd.DataFrame({
+            "Categoria": ["Bed & Bath", "Health & Beauty", "Sports & Leisure", "Computers Accessories", "Furniture Decor"],
+            "Faturamento (R$)": [2148320.50, 1502400.20, 1200300.90, 1150000.00, 950800.75]
+        })
+        st.dataframe(mock_data, use_container_width=True, hide_index=True)
+        
+        
         
     with tab2:
         st.markdown("**Consulta SQL gerada automaticamente:**")
