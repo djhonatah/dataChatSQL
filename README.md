@@ -157,3 +157,16 @@ uv run python src/test_queries.py
 ```bash
 uv run streamlit run app/app.py
 ```
+
+## 7. Entregas da Semana 2 (Desenvolvimento do Núcleo)
+
+Na **Semana 2**, implementamos o núcleo da lógica de conversão Text-to-SQL:
+- **`src/db.py`**: Camada de banco de dados para a conexão com DuckDB e extração do esquema DDL dinâmico.
+- **`src/text_to_sql.py`**: Módulo que interage com o LLM (LangChain + Groq LLaMA 3.3 70B) configurado por meio de Prompt Engineering restrito e seguro.
+- **`src/backend.py`**: Orquestrador que interliga a requisição, geração do SQL e execução no banco.
+- **`src/test_text_to_sql.py`**: Script de testes validando consultas simples iniciais.
+
+Para testar isoladamente o núcleo construído na Semana 2, execute:
+```bash
+uv run python src/test_text_to_sql.py
+```

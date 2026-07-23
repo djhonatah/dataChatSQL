@@ -1,0 +1,35 @@
+# Relatório Técnico: Entrega da Semana 2
+**Projeto**: DataChat SQL Lite
+**Domínio**: Brazilian E-Commerce Public Dataset (Olist)
+
+---
+
+## 1. Integração com o Banco de Dados
+
+Foi desenvolvido o módulo `src/db.py`, responsável por realizar a integração direta com o DuckDB. O componente atua como a camada de dados e fornece:
+- **Extração do Esquema**: Uma função que extrai dinamicamente o DDL de todas as tabelas, incluindo amostras de dados, essencial para munir o LLM com o contexto necessário.
+- **Conexão Segura**: Uso de `read_only=True` ao instanciar conexões para evitar injeção e alterações não desejadas nos dados.
+- **Execução**: Um executor de queries simples que padroniza os retornos no formato tabular usando `pandas.DataFrame`.
+
+## 2. Implementação do Módulo Text-to-SQL
+
+A tradução da linguagem natural para SQL foi implementada no módulo `src/text_to_sql.py`:
+- **Modelos e APIs**: Optou-se pela utilização do **LangChain** para facilitar a criação e a estruturação das *chains*. Como LLM, foi escolhido o **LLaMA 3.3 70B** executado por meio da provedora **Groq**, garantindo que as respostas sejam altamente velozes e precisas.
+- **Prompt Engineering**: Foi desenvolvido um *System Prompt* detalhado, injetando as instruções e restrições obrigatórias (ex.: limitar linhas, tratar NULL, não enviar markdown ou texto avulso, aderir ao DuckDB) juntamente com o DDL da estrutura do banco.
+
+## 3. Desenvolvimento do Backend (Orquestrador)
+
+O orquestrador do sistema, presente no arquivo `src/backend.py`, foi criado para alinhar todo o fluxo da requisição de forma sequencial:
+1. Extração do schema atualizado (`db.py`).
+2. Passagem da pergunta e do schema para o LLM gerar a SQL (`text_to_sql.py`).
+3. Recuperação da query gerada e envio para o banco (`db.py`).
+4. Retorno centralizado dos resultados em formato estruturado.
+
+## 4. Primeiros Testes com Perguntas Simples
+
+Para atestar o pleno funcionamento do núcleo, implementamos um script de testes (`src/test_text_to_sql.py`) contendo apenas perguntas de validação simples, de acordo com o escopo desta semana. Os testes avaliados e executados com sucesso foram:
+- *"Quantos pedidos existem na base?"*
+- *"Quantos clientes únicos realizaram compras?"*
+- *"Qual categoria possui mais produtos?"*
+
+Todos resultaram em geração SQL perfeitamente válida e dados precisos.
