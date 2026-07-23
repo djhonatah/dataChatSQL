@@ -8,4 +8,8 @@ dependencies = [
     "duckdb",
     "pandas",
     "streamlit",
+    "langchain>=0.3",
+    "langchain-groq",
+    "langchain-community",
+    "python-dotenv",
 ]
