@@ -17,7 +17,7 @@ A tradução da linguagem natural para SQL foi implementada no módulo `src/text
 - **Modelos e APIs**: Optou-se pela utilização do **LangChain** para facilitar a criação e a estruturação das *chains*. Como LLM, foi escolhido o **LLaMA 3.3 70B** executado por meio da provedora **Groq**, garantindo que as respostas sejam altamente velozes e precisas.
 - **Comparação de LLMs Avaliados**:
 
-  | Critério | LLaMA 3.3 70B (via Groq) | Gemini 1.5 Flash (Google) | GPT-4o (OpenAI) |
+  | Critério | LLaMA 3.3 70B (via Groq) | Gemini 2.5 Flash (Google) | GPT-4o (OpenAI) |
   | :--- | :--- | :--- | :--- |
   | **Velocidade (Latência)** | **Altíssima** (Infraestrutura LPU) | **Alta** (Otimizado para velocidade) | **Média** (Modelo mais pesado) |
   | **Custo por Requisição** | **Gratuito / Muito Baixo** | **Muito Baixo** | **Alto** |
@@ -25,7 +25,7 @@ A tradução da linguagem natural para SQL foi implementada no módulo `src/text
   | **Precisão Text-to-SQL** | **Alta** (Excelente lógica) | **Alta** (Boa estruturação) | **Altíssima** (Referência no mercado) |
 - **Prompt Engineering**: Foi desenvolvido um *System Prompt* detalhado, injetando as instruções e restrições obrigatórias (ex.: limitar linhas, tratar NULL, não enviar markdown ou texto avulso, aderir ao DuckDB) juntamente com o DDL da estrutura do banco.
 
-## 3. Desenvolvimento do Backend (Orquestrador)
+## 3. Desenvolvimento do Backend
 
 O orquestrador do sistema, presente no arquivo `src/backend.py`, foi criado para alinhar todo o fluxo da requisição de forma sequencial:
 1. Extração do schema atualizado (`db.py`).
