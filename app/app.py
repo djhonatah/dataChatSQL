@@ -6,8 +6,7 @@ import sys
 import os
 import streamlit as st
 import pandas as pd
-
-# Garante que o diretório src esteja no path 
+ 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from backend import process_question 
@@ -173,10 +172,6 @@ def _formatar_valor(valor) -> str:
     return str(valor)
 
 def montar_explicacao_generica(df: pd.DataFrame) -> str:
-    """
-    Monta uma explicação genérica em linguagem natural a partir do resultado,
-    já que o backend ainda não gera uma explicação própria via LLM.
-    """
     if df is None or df.empty:
         return "A consulta foi executada com sucesso, mas não retornou nenhum registro para os critérios informados."
 
@@ -257,12 +252,6 @@ PERGUNTA_TEMPLATES = {
 
 
 def montar_explicacao(pergunta: str, df: pd.DataFrame) -> str:
-    """
-    Monta a explicação em linguagem natural do resultado.
-    Usa um template específico se a pergunta for uma das sugestões prontas.
-    Caso contrário, ou se o template falhar (ex.: colunas em formato
-    inesperado), recai na explicação genérica baseada no shape do resultado.
-    """
     if df is None or df.empty:
         return "A consulta foi executada com sucesso, mas não retornou nenhum registro para os critérios informados."
 

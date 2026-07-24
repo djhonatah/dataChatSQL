@@ -1,15 +1,8 @@
-"""
-Módulo de conexão e operações com o banco de dados DuckDB.
-Responsável por gerenciar conexões, extrair schema e executar queries.
-"""
-
 import duckdb
 import pandas as pd
 import os
 
-
 def _get_db_path() -> str:
-    """Retorna o caminho absoluto para o arquivo DuckDB."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_dir, "data", "datachat.duckdb")
 
@@ -39,10 +32,6 @@ def get_table_names() -> list[str]:
 
 
 def get_schema_ddl() -> str:
-    """
-    Extrai o DDL (CREATE TABLE) de todas as tabelas do banco.
-    Este DDL é injetado no prompt do LLM para que ele conheça a estrutura.
-    """
     conn = get_connection()
     try:
         tables = conn.execute("SHOW TABLES").fetchall()
@@ -78,20 +67,8 @@ def get_schema_ddl() -> str:
     finally:
         conn.close()
 
-
+# Executa consulta SQL no banco de dados DuckDB
 def execute_query(sql: str) -> pd.DataFrame:
-    """
-    Executa uma query SQL no banco de dados e retorna um DataFrame.
-
-    Args:
-        sql: Query SQL a ser executada.
-
-    Returns:
-        DataFrame com os resultados.
-
-    Raises:
-        Exception: Se a query for inválida ou falhar.
-    """
     conn = get_connection()
     try:
         result = conn.execute(sql).fetchdf()

@@ -1,6 +1,4 @@
 """
-Backend — Orquestrador do pipeline DataChat SQL.
-Conecta os módulos db.py e text_to_sql.py em um fluxo completo:
     Pergunta → SQL → Execução → Explicação
 """
 
@@ -17,19 +15,7 @@ from text_to_sql import generate_sql
 
 def process_question(pergunta: str) -> dict:
     """
-    Processa uma pergunta em linguagem natural e retorna o resultado completo.
-
-    Pipeline:
-        1. Extrai o schema DDL do banco
-        2. Gera SQL a partir da pergunta usando o LLM
-        3. Executa a query no DuckDB
-        4. Gera explicação em linguagem natural
-
-    Args:
-        pergunta: Pergunta do usuário em linguagem natural.
-
     Returns:
-        Dicionário com:
             - pergunta (str): pergunta original
             - sql (str): query SQL gerada
             - resultado (pd.DataFrame): resultado da consulta
@@ -43,14 +29,14 @@ def process_question(pergunta: str) -> dict:
         "erro": None,
     }
 
-    # 1. Obter schema do banco
+    # Obter schema do banco
     schema_ddl = get_schema_ddl()
 
-    # 2. Gerar SQL via LLM
+    # Gerar SQL
     sql = generate_sql(pergunta, schema_ddl)
     response["sql"] = sql
 
-    # 3. Executar query no DuckDB
+    # Executar query no DuckDB
     resultado = execute_query(sql)
     response["resultado"] = resultado
 

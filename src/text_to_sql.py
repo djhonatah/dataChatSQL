@@ -1,8 +1,3 @@
-"""
-Módulo Text-to-SQL — Tradução de linguagem natural para SQL usando LLM.
-Utiliza LangChain + Groq (LLaMA 3.3 70B) para gerar queries e explicações.
-"""
-
 import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
@@ -10,7 +5,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import pandas as pd
 
-# Carrega variáveis de ambiente (.env na raiz do projeto)
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(_PROJECT_ROOT, ".env"))
 
@@ -23,7 +17,7 @@ if not GROQ_API_KEY:
         "Defina a variável de ambiente GROQ_API_KEY."
     )
 
-# Modelo principal: LLaMA 3.3 70B (excelente para raciocínio SQL)
+
 LLM_MODEL = "llama-3.3-70b-versatile"
 
 

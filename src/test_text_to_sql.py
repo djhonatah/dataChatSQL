@@ -1,8 +1,3 @@
-"""
-Testes do pipeline Text-to-SQL com perguntas da especificação do projeto.
-Valida que o sistema consegue gerar SQL, executar e explicar os resultados.
-"""
-
 import sys
 import os
 
@@ -12,10 +7,8 @@ from backend import process_question
 
 
 def test_pipeline():
-    """Testa o pipeline completo com perguntas simples e intermediárias."""
 
     perguntas = [
-        # Consultas simples (Semana 2)
         "Quantos pedidos existem na base?",
         "Quantos clientes únicos realizaram compras?",
         "Qual categoria possui mais produtos?",
