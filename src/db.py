@@ -16,7 +16,6 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     if not os.path.exists(db_path):
         raise FileNotFoundError(
             f"Banco de dados não encontrado em: {db_path}\n"
-            "Execute 'uv run python src/setup_database.py' primeiro."
         )
     return duckdb.connect(db_path, read_only=True)
 

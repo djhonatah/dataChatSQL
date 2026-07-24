@@ -15,6 +15,14 @@ Foi desenvolvido o módulo `src/db.py`, responsável por realizar a integração
 
 A tradução da linguagem natural para SQL foi implementada no módulo `src/text_to_sql.py`:
 - **Modelos e APIs**: Optou-se pela utilização do **LangChain** para facilitar a criação e a estruturação das *chains*. Como LLM, foi escolhido o **LLaMA 3.3 70B** executado por meio da provedora **Groq**, garantindo que as respostas sejam altamente velozes e precisas.
+- **Comparação de LLMs Avaliados**:
+
+  | Critério | LLaMA 3.3 70B (via Groq) | Gemini 1.5 Flash (Google) | GPT-4o (OpenAI) |
+  | :--- | :--- | :--- | :--- |
+  | **Velocidade (Latência)** | **Altíssima** (Infraestrutura LPU) | **Alta** (Otimizado para velocidade) | **Média** (Modelo mais pesado) |
+  | **Custo por Requisição** | **Gratuito / Muito Baixo** | **Muito Baixo** | **Alto** |
+  | **Limites de API (Tier Grátis)**| **~30 RPM** (Requisições por Minuto) | **15 RPM** (Requisições por Minuto) | **Sem tier grátis** (Depende de recarga) |
+  | **Precisão Text-to-SQL** | **Alta** (Excelente lógica) | **Alta** (Boa estruturação) | **Altíssima** (Referência no mercado) |
 - **Prompt Engineering**: Foi desenvolvido um *System Prompt* detalhado, injetando as instruções e restrições obrigatórias (ex.: limitar linhas, tratar NULL, não enviar markdown ou texto avulso, aderir ao DuckDB) juntamente com o DDL da estrutura do banco.
 
 ## 3. Desenvolvimento do Backend (Orquestrador)
