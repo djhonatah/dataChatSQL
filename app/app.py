@@ -155,6 +155,11 @@ if "pergunta_input" not in st.session_state:
 if "auto_consultar" not in st.session_state:
     st.session_state.auto_consultar = False
 
+#historico de consultas
+if "historico" not in st.session_state:
+    st.session_state.historico = []
+
+
 def preencher_pergunta(texto: str):
     """Preenche o campo de pergunta E já sinaliza para disparar a consulta automaticamente."""
     st.session_state.pergunta_input = texto
@@ -309,6 +314,14 @@ if disparar_consulta and pergunta:
     with st.spinner("Interpretando pergunta e gerando SQL..."):
         resultado = process_question(pergunta)
 
+#historico de consultas
+    if not resultado.get("erro"):
+        st.session_state.historico.append({
+            "pergunta": pergunta,
+            "sql": resultado.get("sql", ""),
+            "resultado": resultado.get("resultado"),
+        })
+
     st.divider()
     st.subheader("Resultados da Consulta")
 
@@ -318,7 +331,7 @@ if disparar_consulta and pergunta:
         sql_gerado = resultado.get("sql", "")
         df = resultado.get("resultado")
 
-        tab1, tab2 = st.tabs(["Visualização", "SQL Gerada"])
+        tab1, tab2, tab3 = st.tabs(["Visualização", "SQL Gerada", "Histórico de Consultas"])
 
         with tab1:
             explicacao = resultado.get("explicacao") or montar_explicacao(pergunta, df)
@@ -344,6 +357,30 @@ if disparar_consulta and pergunta:
         with tab2:
             st.markdown("Consulta SQL gerada automaticamente:")
             st.code(sql_gerado, language="sql")
+
+        # adicionando histórico de consultas
+        with tab3:
+            st.markdown("### Histórico de consultas")
+
+            if st.session_state.historico:
+
+                for i, item in enumerate(
+                    reversed(st.session_state.historico), start=1
+                ):
+                    with st.expander(f"{i}. {item['pergunta']}"):
+
+                        st.markdown("**SQL gerado:**")
+                        st.code(item["sql"], language="sql")
+
+                        st.markdown("**Resultado:**")
+                        st.dataframe(
+                            item["resultado"],
+                            hide_index=True,
+                            use_container_width=True
+                        )
+
+            else:
+                st.info("Nenhuma consulta realizada ainda.")
 
 elif disparar_consulta and not pergunta:
     st.warning("Por favor, digite uma pergunta antes de consultar.")
