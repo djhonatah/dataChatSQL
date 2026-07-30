@@ -26,19 +26,28 @@ def process_question(pergunta: str) -> dict:
         "pergunta": pergunta,
         "sql": "",
         "resultado": pd.DataFrame(),
+        "explicacao": None,
         "erro": None,
     }
 
-    # Obter schema do banco
-    schema_ddl = get_schema_ddl()
+    try:
+        # Obter schema do banco
+        schema_ddl = get_schema_ddl()
 
-    # Gerar SQL
-    sql = generate_sql(pergunta, schema_ddl)
-    response["sql"] = sql
+        # Gerar SQL
+        sql = generate_sql(pergunta, schema_ddl)
+        response["sql"] = sql
 
-    # Executar query no DuckDB
-    resultado = execute_query(sql)
-    response["resultado"] = resultado
+        # Executar query no DuckDB
+        resultado = execute_query(sql)
+        response["resultado"] = resultado
+
+    # para testar o tratamento de erros
+       # raise Exception("Erro de teste")
+
+    #tratamento de erros
+    except Exception as e:
+        response["erro"] = f"Erro durante o processamento da pergunta: {e}"
 
     return response
 

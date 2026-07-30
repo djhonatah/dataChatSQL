@@ -78,16 +78,23 @@ def generate_sql(pergunta: str, schema_ddl: str) -> str:
 
     chain = prompt | llm | StrOutputParser()
 
-    sql = chain.invoke({
+    try:
+        sql = chain.invoke({
         "schema": schema_ddl,
         "pergunta": pergunta,
-    })
+        })
 
-    # Limpar a resposta (remover possíveis ```sql ... ```)
+    #tratamento de erros
+    except Exception as e:
+        raise RuntimeError(
+            f"Erro ao comunicar com o LLM: {e}"
+        )                                               
+
+    # Limpar a resposta 
     sql = sql.strip()
     if sql.startswith("```"):
         lines = sql.split("\n")
-        # Remove primeira e última linha (```sql e ```)
+        # Remove primeira e última linha 
         lines = [l for l in lines if not l.strip().startswith("```")]
         sql = "\n".join(lines).strip()
 

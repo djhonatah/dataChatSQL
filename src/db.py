@@ -17,7 +17,14 @@ def get_connection() -> duckdb.DuckDBPyConnection:
         raise FileNotFoundError(
             f"Banco de dados não encontrado em: {db_path}\n"
         )
-    return duckdb.connect(db_path, read_only=True)
+    try:
+        return duckdb.connect(db_path, read_only=True)
+
+    #tratamento de erros
+    except Exception as e:
+        raise RuntimeError(
+            f"Erro ao conectar ao banco de dados: {e}"
+        )
 
 
 def get_table_names() -> list[str]:
@@ -69,11 +76,15 @@ def get_schema_ddl() -> str:
 # Executa consulta SQL no banco de dados DuckDB
 def execute_query(sql: str) -> pd.DataFrame:
     conn = get_connection()
+
+#tratamento de erros
     try:
         result = conn.execute(sql).fetchdf()
         return result
     except duckdb.Error as e:
-        raise RuntimeError(f"Erro ao executar SQL: {e}\nQuery: {sql}")
+        raise RuntimeError(
+        f"Erro ao executar a consulta SQL: {e}"
+     )
     finally:
         conn.close()
 
