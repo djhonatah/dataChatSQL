@@ -48,10 +48,7 @@ def process_question(pergunta: str) -> dict:
         resultado = execute_query(sql)
         response["resultado"] = resultado
 
-    # para testar o tratamento de erros
-       # raise Exception("Erro de teste")
-
-    #tratamento de erros
+    #ratamento de erros
     except Exception as e:
         response["erro"] = f"Erro durante o processamento da pergunta: {e}"
 
@@ -59,7 +56,6 @@ def process_question(pergunta: str) -> dict:
 
 
 if __name__ == "__main__":
-    # Teste rápido do pipeline completo
     perguntas = [
         "Quantos pedidos existem na base?",
         "Qual categoria teve maior faturamento?",
@@ -73,7 +69,7 @@ if __name__ == "__main__":
         result = process_question(p)
 
         if result["erro"]:
-            print(f"❌ Erro: {result['erro']}")
+            print(f" Erro: {result['erro']}")
         else:
             print(f"SQL: {result['sql']}")
             print(f"\nResultado:")

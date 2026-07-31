@@ -34,7 +34,6 @@ def setup():
         if filename in tables_map:
             table_name = tables_map[filename]
             print(f"Importando {filename} para a tabela {table_name}...")
-            # Usando read_csv_auto do DuckDB para inferir tipos e carregar
             query = f"CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * FROM read_csv_auto('{csv_file}');"
             try:
                 conn.execute(query)

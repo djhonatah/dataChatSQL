@@ -12,8 +12,7 @@ def run_tests():
     print(f"Conectando ao banco de dados: {db_path}")
     conn = duckdb.connect(db_path)
 
-    # Consultas que exigem JOIN entre 3 ou mais tabelas, para validar a
-    # integridade relacional completa da base (Semana 3 - testes multi-tabela).
+
     queries = {
         "1. Faturamento total por estado do cliente (orders + customers + order_items)": """
             SELECT c.customer_state, ROUND(SUM(oi.price + oi.freight_value), 2) AS faturamento_total
