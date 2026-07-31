@@ -36,6 +36,12 @@ def process_question(pergunta: str) -> dict:
 
         # Gerar SQL
         sql = generate_sql(pergunta, schema_ddl)
+        
+        # Bloquear perguntas fora de contexto
+        if sql == "OFF_TOPIC":
+            response["erro"] = "Essa pergunta parece estar fora do contexto dos dados de e-commerce que analiso. Por favor, faça perguntas sobre vendas, clientes, produtos ou pagamentos."
+            return response
+            
         response["sql"] = sql
 
         # Executar query no DuckDB

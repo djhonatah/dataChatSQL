@@ -46,6 +46,7 @@ REGRAS OBRIGATÓRIAS:
 8. Para categorias traduzidas, use JOIN com category_translation.
 9. NUNCA use SELECT * em produção; selecione apenas colunas necessárias.
 10. Use ORDER BY para resultados ordenados.
+11. Se a pergunta não tiver absolutamente NENHUMA relação com os dados fornecidos, e-commerce, clientes, pagamentos ou produtos (ex: "Qual a capital do Brasil?", "Me conte uma piada"), responda EXATAMENTE com a string: OFF_TOPIC
 
 SCHEMA DO BANCO DE DADOS:
 {schema}
