@@ -308,11 +308,15 @@ for i, ex in enumerate(exemplos):
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
+def ativar_consulta():
+    st.session_state.auto_consultar = True
+
 # campo de entrada
 pergunta = st.text_input(
     "Qual a sua pergunta?",
     placeholder="Ex: Qual categoria de produto teve o maior faturamento em 2018?",
     key="pergunta_input",
+    on_change=ativar_consulta
 )
 
 col_btn1, col_btn2 = st.columns([1, 5])
