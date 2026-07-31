@@ -35,7 +35,7 @@ def extract_sources(sql: str) -> list[str]:
 st.set_page_config(
     page_title="DataChat SQL",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # CSS
@@ -51,10 +51,8 @@ st.markdown("""
     /* ocultar elementos desnecessários da UI base */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
 
-    /* Ocultar controle lateral do sidebar completo */
-    [data-testid="collapsedControl"] { display: none; }
+    /* Ocultar controle lateral do sidebar completo (Removido para permitir sidebar) */
 
     /* Welcome Container Sóbrio */
     .welcome-container {
@@ -164,6 +162,22 @@ def preencher_pergunta(texto: str):
     """Preenche o campo de pergunta E já sinaliza para disparar a consulta automaticamente."""
     st.session_state.pergunta_input = texto
     st.session_state.auto_consultar = True
+
+# === SIDEBAR: Histórico de Consultas ===
+with st.sidebar:
+    st.header("🕰️ Histórico")
+    st.markdown("Reveja suas consultas anteriores:")
+    
+    if st.session_state.historico:
+        for i, item in enumerate(reversed(st.session_state.historico), start=1):
+            with st.expander(f"{i}. {item['pergunta']}"):
+                st.markdown("**SQL gerado:**")
+                st.code(item["sql"], language="sql")
+                st.markdown("**Resultado:**")
+                st.dataframe(item["resultado"], hide_index=True, use_container_width=True)
+    else:
+        st.info("Nenhuma consulta realizada ainda.")
+# =======================================
 
 
 # funções das explicações em linguagem natural
@@ -331,7 +345,7 @@ if disparar_consulta and pergunta:
         sql_gerado = resultado.get("sql", "")
         df = resultado.get("resultado")
 
-        tab1, tab2, tab3 = st.tabs(["Visualização", "SQL Gerada", "Histórico de Consultas"])
+        tab1, tab2 = st.tabs(["Visualização", "SQL Gerada"])
 
         with tab1:
             explicacao = resultado.get("explicacao") or montar_explicacao(pergunta, df)
@@ -357,30 +371,6 @@ if disparar_consulta and pergunta:
         with tab2:
             st.markdown("Consulta SQL gerada automaticamente:")
             st.code(sql_gerado, language="sql")
-
-        # adicionando histórico de consultas
-        with tab3:
-            st.markdown("### Histórico de consultas")
-
-            if st.session_state.historico:
-
-                for i, item in enumerate(
-                    reversed(st.session_state.historico), start=1
-                ):
-                    with st.expander(f"{i}. {item['pergunta']}"):
-
-                        st.markdown("**SQL gerado:**")
-                        st.code(item["sql"], language="sql")
-
-                        st.markdown("**Resultado:**")
-                        st.dataframe(
-                            item["resultado"],
-                            hide_index=True,
-                            use_container_width=True
-                        )
-
-            else:
-                st.info("Nenhuma consulta realizada ainda.")
 
 elif disparar_consulta and not pergunta:
     st.warning("Por favor, digite uma pergunta antes de consultar.")
