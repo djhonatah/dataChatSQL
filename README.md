@@ -150,7 +150,7 @@ uv run python src/setup_database.py
 
 3. **Teste as consultas**:
 ```bash
-uv run python src/test_queries.py
+uv run python tests/test_queries.py
 ```
 
 4. **Suba a aplicação Streamlit**:
@@ -158,15 +158,28 @@ uv run python src/test_queries.py
 uv run streamlit run app/app.py
 ```
 
-## 7. Entregas da Semana 2 (Desenvolvimento do Núcleo)
+## 7. Entregas da Semana 2
 
 Na **Semana 2**, implementamos o núcleo da lógica de conversão Text-to-SQL:
 - **`src/db.py`**: Camada de banco de dados para a conexão com DuckDB e extração do esquema DDL dinâmico.
 - **`src/text_to_sql.py`**: Módulo que interage com o LLM (LangChain + Groq LLaMA 3.3 70B) configurado por meio de Prompt Engineering restrito e seguro.
 - **`src/backend.py`**: Orquestrador que interliga a requisição, geração do SQL e execução no banco.
-- **`src/test_text_to_sql.py`**: Script de testes validando consultas simples iniciais.
+- **`tests/test_text_to_sql.py`**: Script de testes validando consultas simples iniciais.
 
 Para testar isoladamente o núcleo construído na Semana 2, execute:
 ```bash
-uv run python src/test_text_to_sql.py
+uv run python tests/test_text_to_sql.py
+```
+
+## 8. Entregas da Semana 3
+
+Na **Semana 3**, o projeto atingiu sua completude estrutural, recebendo integração e estabilidade finais:
+- **Integração Plena LLM ↔ DB**: A aplicação recebe perguntas na interface (Streamlit), processa no backend junto ao Groq (`llama-3.3-70b-versatile`), roda no DuckDB e exibe visualmente os dados formatados.
+- **Tratamento de Erros e Estabilidade**: Foram adicionados tratamentos (`try/except`) para proteger a aplicação contra interrupções abruptas causadas por indisponibilidade de API ou alucinações (SQLs inválidos). Os erros são convertidos em alertas no frontend.
+- **Histórico de Consultas (State)**: A aplicação agora mantém um histórico em sessão (`st.session_state`), listando perguntas anteriores, scripts SQL e respostas diretamente em uma aba da UI para acesso rápido.
+- **Consultas Multi-tabelas (Alta Complexidade)**: A precisão relacional foi comprovada integrando até 5 tabelas simultâneas (ex: `reviews`, `orders`, `order_items`, `products` e `category_translation`). 
+
+Para testar o estresse das consultas multi-tabelas, execute:
+```bash
+uv run python tests/test_multi_table_queries.py
 ```
