@@ -183,3 +183,15 @@ Para testar o estresse das consultas multi-tabelas, execute:
 ```bash
 uv run python tests/test_multi_table_queries.py
 ```
+
+## 9. Entregas da Semana 4 & Desafio Extra (+20%)
+
+A etapa final agregou requinte visual, robustez e recursos avançados à aplicação:
+- **Gráficos Dinâmicos (Desafio Extra)**: A interface (Streamlit) identifica dados categóricos vs numéricos na resposta SQL e desenha gráficos analíticos de forma automática, elevando a experiência do usuário.
+- **Sugestão Inteligente (Desafio Extra)**: As perguntas iniciais sugeridas agora utilizam queries recomendadas com base nas entidades mapeadas no modelo de negócio.
+- **Memória de Contexto (Desafio Extra)**: Foi implementada passagem do histórico (chat memory) para o LLM. É possível fazer perguntas baseadas na pergunta anterior (ex: "Qual a categoria com mais vendas?", e em seguida "E em 2018?").
+- **Agente de Autocorreção SQL (Self-healing)**: Caso o banco acuse erro de sintaxe ou coluna inexistente, uma função de *fallback* captura o stacktrace e pede ao LLM para corrigir o SQL iterativamente, antes de devolver o erro ao usuário.
+- **Suporte a Consultas Complexas (CTEs e Subconsultas)**: O Prompt System foi evoluído para instruir o LLM na produção livre de funções de janela, CTEs e query aninhada.
+- **Módulo RAG e Dicionário (Desafio Extra)**: As descrições contextuais (ex: domínios de pagamentos e regras de frete) estão salvas no arquivo `data_dictionary.md` e são anexadas no sistema prompt (RAG simplificado), provendo semântica para traduções.
+- **API Rest n8n (Desafio Extra)**: Foi criado o backend `src/api.py` com FastAPI, fornecendo o endpoint POST `/chat` para servir de conector em pipelines de automação n8n sem depender da interface UI (execute usando `uv run uvicorn src.api:app`).
+

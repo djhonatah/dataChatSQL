@@ -30,6 +30,14 @@ def _get_llm(temperature: float = 0.0) -> ChatGroq:
         max_tokens=2048,
     )
 
+def _get_data_dictionary() -> str:
+    """Lê o dicionário de dados caso exista."""
+    dict_path = os.path.join(_PROJECT_ROOT, "data", "data_dictionary.md")
+    if os.path.exists(dict_path):
+        with open(dict_path, "r", encoding="utf-8") as f:
+            return f.read()
+    return ""
+
 
 # ─── Prompt para Geração de SQL ────────────────────────────────────────
 
@@ -41,15 +49,23 @@ REGRAS OBRIGATÓRIAS:
 3. Use JOINs quando a pergunta envolver dados de múltiplas tabelas.
 4. Para datas, use funções do DuckDB: YEAR(), MONTH(), EXTRACT(), etc.
 5. Sempre use aliases descritivos (ex: AS faturamento, AS total_pedidos).
-6. Limite resultados a 20 linhas com LIMIT quando fizer sentido.
+6. Limite resultados a 20 linhas com LIMIT quando fizer sentido (a não ser que seja um valor agregado).
 7. Trate valores NULL quando necessário (IS NOT NULL, COALESCE).
 8. Para categorias traduzidas, use JOIN com category_translation.
 9. NUNCA use SELECT * em produção; selecione apenas colunas necessárias.
 10. Use ORDER BY para resultados ordenados.
 11. Se a pergunta não tiver absolutamente NENHUMA relação com os dados fornecidos, e-commerce, clientes, pagamentos ou produtos (ex: "Qual a capital do Brasil?", "Me conte uma piada"), responda EXATAMENTE com a string: OFF_TOPIC
+12. (Desafio Extra) O usuário pode fazer perguntas com base no HISTÓRICO da conversa (ex: "E em 2018?"). Utilize o histórico para entender o contexto.
+13. (Desafio Extra) Sinta-se livre para usar subconsultas (subqueries) e CTEs (WITH) para responder perguntas analíticas complexas.
 
 SCHEMA DO BANCO DE DADOS:
 {schema}
+
+DICIONÁRIO DE DADOS (Regras de Negócio / Domínio):
+{dictionary}
+
+HISTÓRICO DA CONVERSA:
+{history}
 """
 
 SQL_USER_PROMPT = """Pergunta: {pergunta}
@@ -57,20 +73,41 @@ SQL_USER_PROMPT = """Pergunta: {pergunta}
 Gere a query SQL:"""
 
 
+FIX_SQL_SYSTEM_PROMPT = """Você é um especialista em DuckDB. A query SQL anterior que você gerou falhou ao ser executada.
+Corrija o erro e devolva APENAS o código SQL, sem explicações, sem markdown.
+
+SCHEMA DO BANCO DE DADOS:
+{schema}
+
+DICIONÁRIO DE DADOS:
+{dictionary}
+"""
+
+FIX_SQL_USER_PROMPT = """Query SQL original:
+{sql}
+
+Erro retornado pelo banco de dados:
+{error}
+
+Corrija a query para DuckDB e retorne APENAS o SQL válido:"""
+
+
 # ─── Funções Principais ───────────────────────────────────────────────
 
-def generate_sql(pergunta: str, schema_ddl: str) -> str:
+def _clean_sql(sql: str) -> str:
+    sql = sql.strip()
+    if sql.startswith("```"):
+        lines = sql.split("\n")
+        lines = [l for l in lines if not l.strip().startswith("```")]
+        sql = "\n".join(lines).strip()
+    return sql
+
+def generate_sql(pergunta: str, schema_ddl: str, history: str = "") -> str:
     """
-    Gera uma query SQL a partir de uma pergunta em linguagem natural.
-
-    Args:
-        pergunta: Pergunta do usuário em linguagem natural.
-        schema_ddl: DDL do banco de dados para contexto.
-
-    Returns:
-        String contendo a query SQL gerada.
+    Gera uma query SQL a partir de uma pergunta em linguagem natural, considerando histórico.
     """
     llm = _get_llm(temperature=0.0)
+    dictionary = _get_data_dictionary()
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", SQL_SYSTEM_PROMPT),
@@ -81,34 +118,47 @@ def generate_sql(pergunta: str, schema_ddl: str) -> str:
 
     try:
         sql = chain.invoke({
-        "schema": schema_ddl,
-        "pergunta": pergunta,
+            "schema": schema_ddl,
+            "dictionary": dictionary,
+            "history": history,
+            "pergunta": pergunta,
         })
-
-    #tratamento de erros
     except Exception as e:
-        raise RuntimeError(
-            f"Erro ao comunicar com o LLM: {e}"
-        )                                               
+        raise RuntimeError(f"Erro ao comunicar com o LLM: {e}")
 
-    # Limpar a resposta 
-    sql = sql.strip()
-    if sql.startswith("```"):
-        lines = sql.split("\n")
-        # Remove primeira e última linha 
-        lines = [l for l in lines if not l.strip().startswith("```")]
-        sql = "\n".join(lines).strip()
+    return _clean_sql(sql)
 
-    return sql
+def fix_sql(sql_errada: str, erro_db: str, schema_ddl: str) -> str:
+    """
+    Tenta corrigir um SQL que falhou usando o LLM (Agente Autocorreção).
+    """
+    llm = _get_llm(temperature=0.0)
+    dictionary = _get_data_dictionary()
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", FIX_SQL_SYSTEM_PROMPT),
+        ("human", FIX_SQL_USER_PROMPT),
+    ])
+
+    chain = prompt | llm | StrOutputParser()
+
+    try:
+        sql_fixed = chain.invoke({
+            "schema": schema_ddl,
+            "dictionary": dictionary,
+            "sql": sql_errada,
+            "error": erro_db,
+        })
+    except Exception as e:
+        raise RuntimeError(f"Erro ao comunicar com o LLM durante a correção: {e}")
+
+    return _clean_sql(sql_fixed)
 
 
 if __name__ == "__main__":
-    # Teste rápido
     from db import get_schema_ddl
-
     schema = get_schema_ddl()
     pergunta = "Quantos pedidos existem na base?"
     print(f"Pergunta: {pergunta}")
-
     sql = generate_sql(pergunta, schema)
     print(f"SQL gerada: {sql}")
