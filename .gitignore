@@ -7,10 +7,6 @@ env/
 __pycache__/
 *.pyc
 
-# Banco de Dados
-*.duckdb
-data/*.duckdb
-
 # Streamlit
 .streamlit/
 
