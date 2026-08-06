@@ -52,20 +52,43 @@ SCHEMA DO BANCO DE DADOS:
 {schema}
 """
 
-SQL_USER_PROMPT = """Pergunta: {pergunta}
+SQL_USER_PROMPT = """Histórico de Conversa Anterior:
+{historico}
+
+Pergunta Atual: {pergunta}
 
 Gere a query SQL:"""
 
 
+SQL_FIX_SYSTEM_PROMPT = """Você é um especialista em SQL e DuckDB.
+Sua tarefa é corrigir uma query SQL que falhou ao ser executada.
+Gere APENAS a query SQL corrigida, sem explicações, sem markdown.
+Use APENAS o schema fornecido.
+
+SCHEMA DO BANCO DE DADOS:
+{schema}"""
+
+SQL_FIX_USER_PROMPT = """Pergunta Original: {pergunta}
+
+Query Incorreta:
+{wrong_sql}
+
+Erro retornado pelo DuckDB:
+{error_msg}
+
+Por favor, forneça apenas a query SQL corrigida que resolve este erro:"""
+
+
 # ─── Funções Principais ───────────────────────────────────────────────
 
-def generate_sql(pergunta: str, schema_ddl: str) -> str:
+def generate_sql(pergunta: str, schema_ddl: str, historico: list = None) -> str:
     """
     Gera uma query SQL a partir de uma pergunta em linguagem natural.
 
     Args:
         pergunta: Pergunta do usuário em linguagem natural.
         schema_ddl: DDL do banco de dados para contexto.
+        historico: Lista de dicionários com as interações anteriores.
 
     Returns:
         String contendo a query SQL gerada.
@@ -79,9 +102,17 @@ def generate_sql(pergunta: str, schema_ddl: str) -> str:
 
     chain = prompt | llm | StrOutputParser()
 
+    hist_text = "Nenhum histórico recente."
+    if historico:
+        hist_text = ""
+        # Limita as últimas 3 interações para não estourar o limite de tokens do prompt
+        for item in historico[-3:]:
+            hist_text += f"Usuário: {item['pergunta']}\nSQL Retornado: {item['sql']}\n\n"
+
     try:
         sql = chain.invoke({
         "schema": schema_ddl,
+        "historico": hist_text.strip(),
         "pergunta": pergunta,
         })
 
@@ -96,6 +127,38 @@ def generate_sql(pergunta: str, schema_ddl: str) -> str:
     if sql.startswith("```"):
         lines = sql.split("\n")
         # Remove primeira e última linha 
+        lines = [l for l in lines if not l.strip().startswith("```")]
+        sql = "\n".join(lines).strip()
+
+    return sql
+
+
+def fix_sql_error(pergunta: str, schema_ddl: str, wrong_sql: str, error_msg: str) -> str:
+    """
+    Agente corretor: Pede ao LLM para corrigir uma query que falhou.
+    """
+    llm = _get_llm(temperature=0.0)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", SQL_FIX_SYSTEM_PROMPT),
+        ("human", SQL_FIX_USER_PROMPT),
+    ])
+
+    chain = prompt | llm | StrOutputParser()
+
+    try:
+        sql = chain.invoke({
+            "schema": schema_ddl,
+            "pergunta": pergunta,
+            "wrong_sql": wrong_sql,
+            "error_msg": error_msg,
+        })
+    except Exception as e:
+        raise RuntimeError(f"Erro ao comunicar com o LLM na correção: {e}")
+
+    sql = sql.strip()
+    if sql.startswith("```"):
+        lines = sql.split("\n")
         lines = [l for l in lines if not l.strip().startswith("```")]
         sql = "\n".join(lines).strip()
 

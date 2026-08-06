@@ -10,10 +10,10 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from db import get_schema_ddl, execute_query
-from text_to_sql import generate_sql
+from text_to_sql import generate_sql, fix_sql_error
 
 
-def process_question(pergunta: str) -> dict:
+def process_question(pergunta: str, historico: list = None) -> dict:
     """
     Returns:
             - pergunta (str): pergunta original
@@ -34,8 +34,8 @@ def process_question(pergunta: str) -> dict:
         # Obter schema do banco
         schema_ddl = get_schema_ddl()
 
-        # Gerar SQL
-        sql = generate_sql(pergunta, schema_ddl)
+        # Gerar SQL (agora com histórico)
+        sql = generate_sql(pergunta, schema_ddl, historico)
         
         # Bloquear perguntas fora de contexto
         if sql == "OFF_TOPIC":
@@ -44,9 +44,28 @@ def process_question(pergunta: str) -> dict:
             
         response["sql"] = sql
 
-        # Executar query no DuckDB
-        resultado = execute_query(sql)
-        response["resultado"] = resultado
+        # Executar query no DuckDB com lógica de Auto-Correção (Self-Healing)
+        try:
+            resultado = execute_query(sql)
+            response["resultado"] = resultado
+        except Exception as db_error:
+            error_msg = str(db_error)
+            sucesso = False
+            
+            # Tenta corrigir a query até 2 vezes
+            for tentativa in range(2):
+                try:
+                    sql = fix_sql_error(pergunta, schema_ddl, sql, error_msg)
+                    response["sql"] = sql  # atualiza para mostrar a query que funcionou
+                    resultado = execute_query(sql)
+                    response["resultado"] = resultado
+                    sucesso = True
+                    break
+                except Exception as ex:
+                    error_msg = str(ex)  # novo erro para a próxima iteração
+                    
+            if not sucesso:
+                raise RuntimeError(f"O agente não conseguiu gerar uma query válida. Último erro: {error_msg}")
 
     #ratamento de erros
     except Exception as e:

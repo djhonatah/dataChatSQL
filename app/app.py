@@ -174,7 +174,7 @@ with st.sidebar:
                 st.markdown("**SQL gerado:**")
                 st.code(item["sql"], language="sql")
                 st.markdown("**Resultado:**")
-                st.dataframe(item["resultado"], hide_index=True, use_container_width=True)
+                st.dataframe(item["resultado"], hide_index=True, width="stretch")
     else:
         st.info("Nenhuma consulta realizada ainda.")
 # =======================================
@@ -284,6 +284,38 @@ def montar_explicacao(pergunta: str, df: pd.DataFrame) -> str:
     return montar_explicacao_generica(df)
 
 
+def plotar_grafico_se_possivel(df: pd.DataFrame):
+    """Verifica se o dataframe é adequado para um gráfico e o exibe."""
+    if df is None or df.empty or len(df) < 2:
+        return
+    
+    # Tenta plotar apenas se houver 2 colunas para simplificar
+    if len(df.columns) == 2:
+        colunas_numericas = df.select_dtypes(include=['number']).columns
+        colunas_categoricas = df.select_dtypes(exclude=['number']).columns
+        
+        # Caso 1: 1 coluna numérica e 1 texto/categoria
+        if len(colunas_numericas) == 1 and len(colunas_categoricas) == 1:
+            st.markdown("---")
+            st.markdown("**Visão Gráfica**")
+            col_x = colunas_categoricas[0]
+            col_y = colunas_numericas[0]
+            st.bar_chart(data=df, x=col_x, y=col_y)
+            
+        # Caso 2: 2 colunas numéricas (ex: Ano e Faturamento)
+        elif len(colunas_numericas) == 2:
+            st.markdown("---")
+            st.markdown("**Visão Gráfica**")
+            # Assume que a primeira coluna é o eixo X (o período) e a segunda é o valor Y
+            col_x = df.columns[0]
+            col_y = df.columns[1]
+            
+            # Converte a coluna X para string antes de plotar para o gráfico não tratar o ano (ex: 2018) como número contínuo
+            df_plot = df.copy()
+            df_plot[col_x] = df_plot[col_x].astype(str)
+            st.bar_chart(data=df_plot, x=col_x, y=col_y)
+
+
 # area principal
 st.markdown("""
     <div class="welcome-container">
@@ -304,7 +336,7 @@ exemplos = [
 col1, col2 = st.columns(2)
 for i, ex in enumerate(exemplos):
     with col1 if i % 2 == 0 else col2:
-        st.button(ex, use_container_width=True, on_click=preencher_pergunta, args=[ex], key=f"btn_corp_{i}")
+        st.button(ex, width="stretch", on_click=preencher_pergunta, args=[ex], key=f"btn_corp_{i}")
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
@@ -321,7 +353,7 @@ pergunta = st.text_input(
 
 col_btn1, col_btn2 = st.columns([1, 5])
 with col_btn1:
-    btn_consultar = st.button("Consultar 🚀", use_container_width=True, type="primary")
+    btn_consultar = st.button("Consultar 🚀", width="stretch", type="primary")
 
 # resultados 
 # Dispara a consulta se o botão "consultar" foi clicado OU se um botão de pergunta recomendada foi clicado
@@ -330,7 +362,7 @@ st.session_state.auto_consultar = False  # reseta para não repetir em reruns fu
 
 if disparar_consulta and pergunta:
     with st.spinner("Interpretando pergunta e gerando SQL..."):
-        resultado = process_question(pergunta)
+        resultado = process_question(pergunta, historico=st.session_state.historico)
 
 #historico de consultas
     if not resultado.get("erro"):
@@ -369,6 +401,7 @@ if disparar_consulta and pergunta:
 
             if df is not None and not df.empty:
                 st.dataframe(df, use_container_width=True, hide_index=True)
+                plotar_grafico_se_possivel(df)
             else:
                 st.info("Nenhum dado retornado para esta consulta.")
 
