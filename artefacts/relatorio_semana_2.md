@@ -1,3 +1,11 @@
+<div align="center">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Universidade_Estadual_da_Para%C3%ADba_-_marca.svg/1200px-Universidade_Estadual_da_Para%C3%ADba_-_marca.svg.png" width="150">
+  <br>
+  <h3>Universidade Estadual da Paraíba (UEPB)</h3>
+</div>
+
+<br>
+
 # Relatório Técnico: Entrega da Semana 2
 **Projeto**: DataChat SQL Lite
 **Domínio**: Brazilian E-Commerce Public Dataset (Olist)
