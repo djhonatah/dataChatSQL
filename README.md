@@ -2,6 +2,10 @@
 
 Assistente inteligente capaz de responder perguntas sobre a base de dados **Brazilian E-Commerce Public Dataset (Olist)** utilizando linguagem natural.
 
+> [!IMPORTANT]
+> 📚 **DOCUMENTAÇÃO COMPLETA**:  
+> Toda a documentação detalhada necessária para este projeto (tais como **Manuais de Instalação, Relatórios Técnicos** e outros materiais complementares) encontra-se na pasta **`artefacts/`**. Por favor, consulte o conteúdo dessa pasta para um entendimento aprofundado do sistema e dos processos de configuração.
+
 ## 1. Estudo da Base Olist
 
 ### Visão Geral
@@ -158,26 +162,26 @@ uv run python tests/test_queries.py
 uv run streamlit run app/app.py
 ```
 
-## 7. Entregas da Semana 2
+## 7. Funcionalidades e Estrutura do Projeto
 
-Na **Semana 2**, implementamos o núcleo da lógica de conversão Text-to-SQL:
+O projeto atingiu sua completude estrutural integrando as seguintes funcionalidades e componentes principais:
+
+- **Integração Plena LLM ↔ DB**: A aplicação recebe perguntas na interface (Streamlit), processa no backend junto ao Groq (`llama-3.3-70b-versatile`), roda no DuckDB e exibe visualmente os dados formatados.
+- **Tratamento de Erros e Estabilidade**: Foram adicionados tratamentos (`try/except`) para proteger a aplicação contra interrupções abruptas causadas por indisponibilidade de API ou alucinações (SQLs inválidos). Os erros são convertidos em alertas amigáveis no frontend.
+- **Histórico de Consultas (State)**: A aplicação mantém um histórico em sessão (`st.session_state`), listando perguntas anteriores, scripts SQL gerados e respostas diretamente em uma aba da UI para acesso rápido.
+- **Consultas Multi-tabelas (Alta Complexidade)**: A precisão relacional foi comprovada integrando até 5 tabelas simultâneas (ex: `reviews`, `orders`, `order_items`, `products` e `category_translation`).
+
+### Principais Módulos do Sistema:
 - **`src/db.py`**: Camada de banco de dados para a conexão com DuckDB e extração do esquema DDL dinâmico.
-- **`src/text_to_sql.py`**: Módulo que interage com o LLM (LangChain + Groq LLaMA 3.3 70B) configurado por meio de Prompt Engineering restrito e seguro.
+- **`src/text_to_sql.py`**: Módulo que interage com o LLM (LangChain + Groq) configurado por meio de Prompt Engineering restrito e seguro.
 - **`src/backend.py`**: Orquestrador que interliga a requisição, geração do SQL e execução no banco.
-- **`tests/test_text_to_sql.py`**: Script de testes validando consultas simples iniciais.
 
-Para testar isoladamente o núcleo construído na Semana 2, execute:
+### Testes Adicionais
+
+Para testar isoladamente o núcleo de Text-to-SQL, execute:
 ```bash
 uv run python tests/test_text_to_sql.py
 ```
-
-## 8. Entregas da Semana 3
-
-Na **Semana 3**, o projeto atingiu sua completude estrutural, recebendo integração e estabilidade finais:
-- **Integração Plena LLM ↔ DB**: A aplicação recebe perguntas na interface (Streamlit), processa no backend junto ao Groq (`llama-3.3-70b-versatile`), roda no DuckDB e exibe visualmente os dados formatados.
-- **Tratamento de Erros e Estabilidade**: Foram adicionados tratamentos (`try/except`) para proteger a aplicação contra interrupções abruptas causadas por indisponibilidade de API ou alucinações (SQLs inválidos). Os erros são convertidos em alertas no frontend.
-- **Histórico de Consultas (State)**: A aplicação agora mantém um histórico em sessão (`st.session_state`), listando perguntas anteriores, scripts SQL e respostas diretamente em uma aba da UI para acesso rápido.
-- **Consultas Multi-tabelas (Alta Complexidade)**: A precisão relacional foi comprovada integrando até 5 tabelas simultâneas (ex: `reviews`, `orders`, `order_items`, `products` e `category_translation`). 
 
 Para testar o estresse das consultas multi-tabelas, execute:
 ```bash
