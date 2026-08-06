@@ -88,17 +88,3 @@ def execute_query(sql: str) -> pd.DataFrame:
     finally:
         conn.close()
 
-
-if __name__ == "__main__":
-    # Teste rápido
-    print("=== Tabelas disponíveis ===")
-    for t in get_table_names():
-        print(f"  - {t}")
-
-    print("\n=== Schema DDL (primeiras 500 chars) ===")
-    ddl = get_schema_ddl()
-    print(ddl[:500])
-
-    print("\n=== Teste de query ===")
-    df = execute_query("SELECT COUNT(*) AS total FROM orders")
-    print(df)

@@ -1,7 +1,3 @@
-"""
-app.py — DataChat SQL Lite
-"""
-
 import sys
 import os
 import streamlit as st
@@ -163,7 +159,6 @@ def preencher_pergunta(texto: str):
     st.session_state.pergunta_input = texto
     st.session_state.auto_consultar = True
 
-# === SIDEBAR: Histórico de Consultas ===
 with st.sidebar:
     st.header("🕰️ Histórico")
     st.markdown("Reveja suas consultas anteriores:")
@@ -177,12 +172,10 @@ with st.sidebar:
                 st.dataframe(item["resultado"], hide_index=True, width="stretch")
     else:
         st.info("Nenhuma consulta realizada ainda.")
-# =======================================
 
 
 # funções das explicações em linguagem natural
 def _formatar_valor(valor) -> str:
-    """Formata números com separador de milhar/decimal em padrão BR, mantém o resto como string."""
     if isinstance(valor, (int, float)):
         try:
             return f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".").rstrip("0").rstrip(",")

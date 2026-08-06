@@ -44,7 +44,7 @@ def process_question(pergunta: str, historico: list = None) -> dict:
             
         response["sql"] = sql
 
-        # Executar query no DuckDB com lógica de Auto-Correção (Self-Healing)
+        # Executar query no DuckDB com lógica de Auto-Correção
         try:
             resultado = execute_query(sql)
             response["resultado"] = resultado
@@ -67,30 +67,9 @@ def process_question(pergunta: str, historico: list = None) -> dict:
             if not sucesso:
                 raise RuntimeError(f"O agente não conseguiu gerar uma query válida. Último erro: {error_msg}")
 
-    #ratamento de erros
+    #tratamento de erros
     except Exception as e:
         response["erro"] = f"Erro durante o processamento da pergunta: {e}"
 
     return response
 
-
-if __name__ == "__main__":
-    perguntas = [
-        "Quantos pedidos existem na base?",
-        "Qual categoria teve maior faturamento?",
-    ]
-
-    for p in perguntas:
-        print(f"\n{'='*60}")
-        print(f"Pergunta: {p}")
-        print("=" * 60)
-
-        result = process_question(p)
-
-        if result["erro"]:
-            print(f" Erro: {result['erro']}")
-        else:
-            print(f"SQL: {result['sql']}")
-            print(f"\nResultado:")
-            print(result["resultado"].head(10).to_string(index=False))
-            print(f"\nExplicação: {result['explicacao']}")

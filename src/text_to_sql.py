@@ -22,7 +22,6 @@ LLM_MODEL = "llama-3.3-70b-versatile"
 
 
 def _get_llm(temperature: float = 0.0) -> ChatGroq:
-    """Retorna uma instância do LLM Groq configurada."""
     return ChatGroq(
         api_key=GROQ_API_KEY,
         model=LLM_MODEL,
@@ -164,14 +163,3 @@ def fix_sql_error(pergunta: str, schema_ddl: str, wrong_sql: str, error_msg: str
 
     return sql
 
-
-if __name__ == "__main__":
-    # Teste rápido
-    from db import get_schema_ddl
-
-    schema = get_schema_ddl()
-    pergunta = "Quantos pedidos existem na base?"
-    print(f"Pergunta: {pergunta}")
-
-    sql = generate_sql(pergunta, schema)
-    print(f"SQL gerada: {sql}")
