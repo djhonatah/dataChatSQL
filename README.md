@@ -5,6 +5,10 @@ Assistente inteligente capaz de responder perguntas sobre a base de dados **Braz
 > [!IMPORTANT]
 > 📚 **DOCUMENTAÇÃO COMPLETA**:  
 > Toda a documentação detalhada necessária para este projeto (tais como **Manuais de Instalação, Relatórios Técnicos** e outros materiais complementares) encontra-se na pasta **`artefacts/`**. Por favor, consulte o conteúdo dessa pasta para um entendimento aprofundado do sistema e dos processos de configuração.
+>
+>🎥 **VÍDEO DEMONSTRATIVO**:
+> O vídeo de apresentação e demonstração da aplicação além de estar disponível na pasta **`artefacts/`** e também pode ser acessado pelo link abaixo:
+🔗 [Assistir vídeo explicativo do projeto de DataChat SQL] (https://youtu.be/5mfODMxCGTo)
 
 ## 1. Estudo da Base Olist
 
